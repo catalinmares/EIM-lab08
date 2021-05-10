@@ -2,7 +2,6 @@ package ro.pub.cs.systems.eim.lab08.chatservicejmdns.view;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +32,7 @@ public class ChatConversationFragment extends Fragment {
     private int clientPosition;
     private int clientType;
 
-    private SendMessageButtonClickListener sendMessageButtonClickListener = new SendMessageButtonClickListener();
+    private final SendMessageButtonClickListener sendMessageButtonClickListener = new SendMessageButtonClickListener();
     private class SendMessageButtonClickListener implements Button.OnClickListener {
 
         @Override
@@ -60,31 +59,28 @@ public class ChatConversationFragment extends Fragment {
     }
 
     public synchronized void appendMessage(final Message message) {
-        chatCommunicationHistoryLinearLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                TextView messageTextView = new TextView(getActivity());
-                messageTextView.setText(message.getContent());
-                LinearLayout.LayoutParams messageTextViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                switch(message.getType()) {
-                    case Constants.MESSAGE_TYPE_SENT:
-                        messageTextView.setBackgroundResource(R.drawable.frame_border_sent_message);
-                        messageTextView.setGravity(Gravity.LEFT);
-                        messageTextViewLayoutParams.gravity = Gravity.LEFT;
-                        break;
-                    case Constants.MESSAGE_TYPE_RECEIVED:
-                        messageTextView.setBackgroundResource(R.drawable.frame_border_received_message);
-                        messageTextView.setGravity(Gravity.RIGHT);
-                        messageTextViewLayoutParams.gravity = Gravity.RIGHT;
-                        break;
-                }
-
-                chatCommunicationHistoryLinearLayout.addView(messageTextView, messageTextViewLayoutParams);
-
-                Space space = new Space(getActivity());
-                LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                chatCommunicationHistoryLinearLayout.addView(space, spaceLayoutParams);
+        chatCommunicationHistoryLinearLayout.post(() -> {
+            TextView messageTextView = new TextView(getActivity());
+            messageTextView.setText(message.getContent());
+            LinearLayout.LayoutParams messageTextViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            switch(message.getType()) {
+                case Constants.MESSAGE_TYPE_SENT:
+                    messageTextView.setBackgroundResource(R.drawable.frame_border_sent_message);
+                    messageTextView.setGravity(Gravity.LEFT);
+                    messageTextViewLayoutParams.gravity = Gravity.LEFT;
+                    break;
+                case Constants.MESSAGE_TYPE_RECEIVED:
+                    messageTextView.setBackgroundResource(R.drawable.frame_border_received_message);
+                    messageTextView.setGravity(Gravity.RIGHT);
+                    messageTextViewLayoutParams.gravity = Gravity.RIGHT;
+                    break;
             }
+
+            chatCommunicationHistoryLinearLayout.addView(messageTextView, messageTextViewLayoutParams);
+
+            Space space = new Space(getActivity());
+            LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            chatCommunicationHistoryLinearLayout.addView(space, spaceLayoutParams);
         });
     }
 
@@ -108,16 +104,16 @@ public class ChatConversationFragment extends Fragment {
                 break;
         }
 
-        chatCommunicationHistoryLinearLayout = (LinearLayout)getActivity().findViewById(R.id.chat_communication_history_linear_layout);
-        messageEditText = (EditText)getActivity().findViewById(R.id.message_edit_text);
+        chatCommunicationHistoryLinearLayout = getActivity().findViewById(R.id.chat_communication_history_linear_layout);
+        messageEditText = getActivity().findViewById(R.id.message_edit_text);
 
-        sendMessageButton = (Button)getActivity().findViewById(R.id.send_message_button);
+        sendMessageButton = getActivity().findViewById(R.id.send_message_button);
         sendMessageButton.setOnClickListener(sendMessageButtonClickListener);
 
         if (chatClient != null) {
             chatClient.setContext(chatServiceActivity);
             List<Message> conversationHistory = chatClient.getConversationHistory();
-            for (Message conversation: conversationHistory) {
+            for (Message conversation : conversationHistory) {
                 appendMessage(conversation);
             }
         }

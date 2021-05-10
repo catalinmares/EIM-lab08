@@ -72,7 +72,7 @@ public class NetworkService {
 
     @Override
     public String toString() {
-        return ((serviceName != null) ? serviceName : "") + " " + serviceHost.toString() + ":" + String.valueOf(servicePort);
+        return ((serviceName != null) ? serviceName : "") + " " + serviceHost + ":" + servicePort;
     }
 
 }

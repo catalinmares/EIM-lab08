@@ -140,7 +140,7 @@ public class ChatActivity extends AppCompatActivity {
     public ChatNetworkServiceFragment getChatNetworkServiceFragment() {
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = fragmentManager.findFragmentByTag(Constants.FRAGMENT_TAG);
-        if (fragment instanceof  ChatNetworkServiceFragment) {
+        if (fragment instanceof ChatNetworkServiceFragment) {
             return (ChatNetworkServiceFragment)fragment;
         }
         return null;
@@ -164,14 +164,11 @@ public class ChatActivity extends AppCompatActivity {
 
     public void setDiscoveredServices(final ArrayList<NetworkService> discoveredServices) {
         this.discoveredServices = discoveredServices;
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                ChatNetworkServiceFragment chatNetworkServiceFragment = getChatNetworkServiceFragment();
-                if (chatNetworkServiceFragment != null && chatNetworkServiceFragment.isVisible()) {
-                    chatNetworkServiceFragment.getDiscoveredServicesAdapter().setData(discoveredServices);
-                    chatNetworkServiceFragment.getDiscoveredServicesAdapter().notifyDataSetChanged();
-                }
+        handler.post(() -> {
+            ChatNetworkServiceFragment chatNetworkServiceFragment = getChatNetworkServiceFragment();
+            if (chatNetworkServiceFragment != null && chatNetworkServiceFragment.isVisible()) {
+                chatNetworkServiceFragment.getDiscoveredServicesAdapter().setData(discoveredServices);
+                chatNetworkServiceFragment.getDiscoveredServicesAdapter().notifyDataSetChanged();
             }
         });
     }
@@ -182,14 +179,11 @@ public class ChatActivity extends AppCompatActivity {
 
     public void setConversations(final ArrayList<NetworkService> conversations) {
         this.conversations = conversations;
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                ChatNetworkServiceFragment chatNetworkServiceFragment = getChatNetworkServiceFragment();
-                if (chatNetworkServiceFragment != null && chatNetworkServiceFragment.isVisible()) {
-                    chatNetworkServiceFragment.getConversationsAdapter().setData(conversations);
-                    chatNetworkServiceFragment.getConversationsAdapter().notifyDataSetChanged();
-                }
+        handler.post(() -> {
+            ChatNetworkServiceFragment chatNetworkServiceFragment = getChatNetworkServiceFragment();
+            if (chatNetworkServiceFragment != null && chatNetworkServiceFragment.isVisible()) {
+                chatNetworkServiceFragment.getConversationsAdapter().setData(conversations);
+                chatNetworkServiceFragment.getConversationsAdapter().notifyDataSetChanged();
             }
         });
     }

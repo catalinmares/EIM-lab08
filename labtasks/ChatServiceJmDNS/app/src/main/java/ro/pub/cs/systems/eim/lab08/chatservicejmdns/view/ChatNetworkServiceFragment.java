@@ -10,7 +10,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 import ro.pub.cs.systems.eim.lab08.chatservicejmdns.R;
 import ro.pub.cs.systems.eim.lab08.chatservicejmdns.controller.NetworkServiceAdapter;
@@ -35,7 +42,7 @@ public class ChatNetworkServiceFragment extends Fragment {
     private ListView discoveredServicesListView = null;
     private ListView conversationsListView = null;
 
-    private ServiceRegistrationStatusButtonListener serviceRegistrationStatusButtonListener = new ServiceRegistrationStatusButtonListener();
+    private final ServiceRegistrationStatusButtonListener serviceRegistrationStatusButtonListener = new ServiceRegistrationStatusButtonListener();
     private class ServiceRegistrationStatusButtonListener implements Button.OnClickListener {
 
         @Override
@@ -65,7 +72,7 @@ public class ChatNetworkServiceFragment extends Fragment {
 
     }
 
-    private ServiceDiscoveryStatusButtonListener serviceDiscoveryStatusButtonListener = new ServiceDiscoveryStatusButtonListener();
+    private final ServiceDiscoveryStatusButtonListener serviceDiscoveryStatusButtonListener = new ServiceDiscoveryStatusButtonListener();
     private class ServiceDiscoveryStatusButtonListener implements Button.OnClickListener {
 
         @Override
@@ -93,6 +100,39 @@ public class ChatNetworkServiceFragment extends Fragment {
 	// get a list of network interfaces available on the phone
 	// get a list of IPv4 addresses associated with these interfaces
 	// Update the textview with the local addresses
+        Enumeration interfaces = null;
+
+        try {
+            interfaces = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e) {
+            Log.e(Constants.TAG, "Could not query interface list: " + e.getMessage());
+            if (Constants.DEBUG) {
+                e.printStackTrace();
+            }
+        }
+
+        String IPs = "";
+
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface n = (NetworkInterface) interfaces.nextElement();
+            Enumeration ee = n.getInetAddresses();
+
+            while (ee.hasMoreElements()) {
+                InetAddress i = (InetAddress) ee.nextElement();
+
+                if (i instanceof Inet4Address) {
+                    if (IPs.length() > 0) {
+                        IPs += ", ";
+                    }
+
+                    IPs += i.getHostAddress();
+                }
+            }
+        }
+
+        TextView LocalIPs = view.findViewById(R.id.service_discovery_local_addr);
+        LocalIPs.setText(IPs);
+
         return view;
     }
 
@@ -102,22 +142,22 @@ public class ChatNetworkServiceFragment extends Fragment {
 
         Log.i(Constants.TAG, "ChatNetworkServiceFragment -> onActivityCreated() callback method was invoked");
 
-        servicePortEditText = (EditText)getActivity().findViewById(R.id.port_edit_text);
+        servicePortEditText = getActivity().findViewById(R.id.port_edit_text);
 
-        serviceRegistrationStatusButton = (Button)getActivity().findViewById(R.id.service_registration_status_button);
+        serviceRegistrationStatusButton = getActivity().findViewById(R.id.service_registration_status_button);
         serviceRegistrationStatusButton.setOnClickListener(serviceRegistrationStatusButtonListener);
 
-        serviceDiscoveryStatusButton = (Button)getActivity().findViewById(R.id.service_discovery_status_button);
+        serviceDiscoveryStatusButton = getActivity().findViewById(R.id.service_discovery_status_button);
         serviceDiscoveryStatusButton.setOnClickListener(serviceDiscoveryStatusButtonListener);
 
         chatActivity = (ChatActivity)getActivity();
         networkServiceDiscoveryOperations = chatActivity.getNetworkServiceDiscoveryOperations();
 
-        discoveredServicesListView = (ListView)getActivity().findViewById(R.id.discovered_services_list_view);
+        discoveredServicesListView = getActivity().findViewById(R.id.discovered_services_list_view);
         discoveredServicesAdapter = new NetworkServiceAdapter(chatActivity, chatActivity.getDiscoveredServices(), chatActivity.getNetworkServiceDiscoveryOperations());
         discoveredServicesListView.setAdapter(discoveredServicesAdapter);
 
-        conversationsListView = (ListView)getActivity().findViewById(R.id.conversations_list_view);
+        conversationsListView = getActivity().findViewById(R.id.conversations_list_view);
         conversationsAdapter = new NetworkServiceAdapter(chatActivity, chatActivity.getConversations(), chatActivity.getNetworkServiceDiscoveryOperations());
         conversationsListView.setAdapter(conversationsAdapter);
     }

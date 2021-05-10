@@ -26,11 +26,11 @@ import ro.pub.cs.systems.eim.lab08.chatservicejmdns.view.ChatConversationFragmen
 
 public class NetworkServiceAdapter extends BaseAdapter {
 
-    private Context context = null;
-    private LayoutInflater layoutInflater = null;
+    private Context context;
+    private LayoutInflater layoutInflater;
 
-    private ArrayList<NetworkService> data = null;
-    private NetworkServiceDiscoveryOperations NSDops = null;
+    private ArrayList<NetworkService> data;
+    private NetworkServiceDiscoveryOperations NSDops;
 
     private static class NetworkServiceViewHolder {
         private TextView networkServiceNameTextView;
